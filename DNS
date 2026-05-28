@@ -1,0 +1,81 @@
+正向 (Forward) hostname -> ip 名字 -> 数字  通过姓名找电话	    A (Address)   
+反向 (Reverse) ip -> hostname 数字 -> 名字  来电显示，电话找人名 PTR (Pointer)         
+挖宝藏  
+dig @ip hostname 手里拿着地址（域名），你想挖出地底下的金矿（IP 地址）。
+dig @ip -x 10.1.51.14  ip ->hostname
+@ip指定しないと、127.0.0.53で探す
+
+---------主要服务----------
+# BIND9
+systemctl status bind9/named
+# AppArmor
+systemctl status apparmor
+# systemd-resolved
+systemctl status systemd-resolved
+
+--------systemd-resolved---------
+systemd-resolved是一个服务！！！ 本地解析的管家
+# 最常用的 resolvectl 命令示例
+# 查看当前 DNS 概览	
+resolvectl status
+# 查询特定域名的解析	
+resolvectl query google.com
+# 刷新（清除）DNS 缓存	
+resolvectl flush-caches
+# 查看缓存统计信息	
+resolvectl statistics
+# 列出所有 DNS 记录	
+resolvectl show
+
+---------文件位置-----------
+# 主配置文件
+/chroot/named/etc/named.conf
+# 全局选项
+/chroot/named/etc/named.conf.options
+# 本地定义
+/chroot/named/etc/named.conf.local
+
+# zonefile path 
+# 数据目录
+/chroot/named/var/named
+# 区域数据文件
+/chroot/named/var/named/{{ item }}.zone
+
+# 系统解析配置
+/etc/systemd/resolved.conf
+
+---------修改后操作-----------
+# after change the conf
+语法检查（预防性步骤）
+named-checkconf /chroot/named/etc/named.conf
+使用 rndc 重新加载（优于 restart）
+rndc reload
+处理 Chroot 权限与同步
+chown bind:bind /chroot/named/etc/named.conf.local
+检查 AppArmor 策略
+查看日志：tail -f /var/log/syslog | grep -i apparmor
+如果是新路径：需要修改 /etc/apparmor.d/usr.sbin.named 并执行 systemctl reload apparmor
+清理本地缓存 (systemd-resolved)
+resolvectl flush-caches
+验证修改结果
+dig @127.0.0.1 <你修改的域名>
+
+
+------文件所有权（Ownership）的核心原则是“最小权限原则”-------
+BIND 进程（以 bind 用户运行）只需要对必须修改的文件拥有“写”权限，其他所有文件都应该由 root 拥有，且对 bind 仅开放“读”权限
+主配置文件 (named.conf, .local)	  root:bind	  root 能改配置，bind 只读。
+静态 Zone 文件 (Master)          root:bind	 手动维护的区域文件，防止被 BIND 进程意外修改。
+动态 Zone 文件 (Slave/DDNS)	    bind:bind	   BIND 需要写入从主服务器同步过来的数据或动态更新。
+日志文件 (/var/log/named.log)	  bind:bind	   BIND 进程需要实时写入日志。
+PID 与缓存目录 (/var/run/named)	  bind:bind	   进程启动时需要写入 PID 文件及管理套接字。
+Chroot 基础目录结构	              root:root	    整个隔离环境的“架子”必须由 root 锁定，防止逃逸。
+/dev/ 节点 (如 null, random)	    root:root	    基础设备文件，绝对不能让普通用户修改。
+
+
+需要写 bind:bind   Slave Zone 文件、日志、数据文件夹（用于存放 managed-keys）。
+只读  root:bind    主配置文件、你手动用 vim 编辑的解析记录。
+
+系统资源（如 /etc/bind/named.conf）通常属于 root。
+业务数据（如 /var/cache/bind/ 下的缓存）通常属于 bind。
+
+服务是以什么身份启动的？
