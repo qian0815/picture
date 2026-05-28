@@ -1,0 +1,7 @@
+常用command
+
+
+
+
+# 替换ip
+sed -i 's/10\.1\.51\.51;/10\.1\.51\.14;/g' /chroot/named/etc/named.conf.local
