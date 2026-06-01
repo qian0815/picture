@@ -1,0 +1,6 @@
+ssh hostname
+local :  ~/.ssh/config
+
+# 强制跳过密钥登录，直接进入密码输入
+ssh -o PubkeyAuthentication=no user@hostname
+# -o: option
