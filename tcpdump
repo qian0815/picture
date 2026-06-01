@@ -1,0 +1,15 @@
+tcpdump でパケットをキャプチャする
+
+# インタフェースを確認します
+tcpdump --list-interfaces
+
+# パケットのキャプチャを開始
+tcpdump --interface any
+
+# tcpdump は、TCP、UDP、ICMP など、さまざまなプロトコルをキャプチャしてデコードできます。
+S SYN 接続開始
+F FIN 接続完了
+P PUSH データプッシュ
+R RST 接続リセット
+. ACK 確認
+
