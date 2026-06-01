@@ -46,20 +46,27 @@ resolvectl show
 
 ---------修改后操作-----------
 # after change the conf
-语法检查（预防性步骤）
+# 语法检查（预防性步骤）
 named-checkconf /chroot/named/etc/named.conf
-使用 rndc 重新加载（优于 restart）
+# 使用 rndc 重新加载（优于 restart）
 rndc reload
-处理 Chroot 权限与同步
+# 处理 Chroot 权限与同步
 chown bind:bind /chroot/named/etc/named.conf.local
-检查 AppArmor 策略
-查看日志：tail -f /var/log/syslog | grep -i apparmor
-如果是新路径：需要修改 /etc/apparmor.d/usr.sbin.named 并执行 systemctl reload apparmor
-清理本地缓存 (systemd-resolved)
+# 检查 AppArmor 策略
+# 查看日志：tail -f /var/log/syslog | grep -i apparmor
+# 如果是新路径：需要修改 /etc/apparmor.d/usr.sbin.named 并执行 systemctl reload apparmor
+# 清理本地缓存 (systemd-resolved)
 resolvectl flush-caches
-验证修改结果
+# 验证修改结果
 dig @127.0.0.1 <你修改的域名>
 
+---------手動reload zonefile--------
+# 2号机
+rndc retransfer <zone_name>：强制从机立刻发起全量同步，不管 Serial 号。
+# 1号机
+rndc notify <zone_name>： 告诉所有从机：“我有更新了，快来拿”。
+# 清DNS缓存
+rndc flush
 
 ------文件所有权（Ownership）的核心原则是“最小权限原则”-------
 BIND 进程（以 bind 用户运行）只需要对必须修改的文件拥有“写”权限，其他所有文件都应该由 root 拥有，且对 bind 仅开放“读”权限
