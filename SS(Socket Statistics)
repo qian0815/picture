@@ -1,0 +1,12 @@
+ss -tulpn
+
+ss -ntlp (常用 TCP)
+ss -tulpn (全都要)。
+
+-t	TCP	常见的网页、API 协议
+-u	UDP	常见的 DNS、视频流协议
+-l	Listening	最重要！ 只看“正在摆摊”的服务，不看“正在买东西”的客户端
+-p	Process	显示是哪个进程（PID/Name）占用的，不然你知道端口也没用
+-n	Numeric	数字化。不要把 80 转成 http，不要把 127.0.0.1 转成 localhost，直接给数字，速度最快
+
+LISTEN   0   128   127.0.0.53%lo:53   0.0.0.0:* users:(("systemd-resolve",pid=582,fd=13))  对外提供服务
