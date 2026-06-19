@@ -1,0 +1,13 @@
+确认服务器上到底有没有安装这个软件包
+dpkg -l | grep freeradius
+apt list --installed | grep freeradius
+
+
+查看都有哪些旧版本可以降
+apt policy freeradius
+
+apt remove python3-pip
+
+
+手动指定安装一个旧版本（实现降级）
+sudo apt-get install freeradius=3.0.21-0ubuntu1 freeradius-ldap=3.0.21-0ubuntu1
