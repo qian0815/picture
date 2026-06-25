@@ -1,0 +1,7 @@
+查看输出的 HTTP/1.1 XXX 状态码：
+如果是 200 OK，但仍然报 JSON 错误，说明 API 接口的数据结构可能有异常。
+如果是 401 / 403，是权限密码问题。
+如果是 500 / 502 / 503，是目标服务器（localhost 的 Pulp 服务）本身出了故障。
+
+
+curl -k -v -u admin:$RHUIPW -X GET "https://localhost/pulp/api/v3/tasks/?name=pulpcore.app.tasks.orphan.orphan_cleanup&state__in=running,waiting&limit=1"
