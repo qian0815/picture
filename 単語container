@@ -1,0 +1,28 @@
+# sidecar　（边车模式）容器设计模式。
+在 Kubernetes 中，最小的调度单元是 Pod。一个 Pod 可以包含一个或多个容器。Sidecar 就是指与主应用程序容器运行在同一个 Pod 中的辅助容器。
+・　核心思想
+解耦（Separation of Concerns）。让主容器专心处理核心业务逻辑，而将非业务相关的通用功能剥离出来交给 Sidecar 处理。
+共享资源： 主容器和 Sidecar 容器共享同一个网络 IP、端口空间以及存储卷。
+生命周期相同： 它们同时启动，同时销毁。
+・　常见应用场景：
+日志收集： 主程序把日志写到本地文件，Sidecar 负责把文件内容收集并发送到外部的日志系统（如 ELK、Fluentd）。
+网络代理/安全： 比如 Service Mesh（如 Istio）中的 Envoy 代理，拦截并管理进出主容器的所有网络流量。
+配置同步： 定期从远程拉取最新配置，并更新给主容器。
+
+# metrics exporter （指标导出器）
+Metrics Exporter 的作用是收集并暴露系统的运行监控数据。
+监控服务器通常采用“拉取”（Pull）模式。这意味着监控服务器会定期去访问各个应用程序，把它们的状态数据拉回来。
+但是，很多第三方应用（比如 MySQL, Redis, Nginx）或者旧的业务系统，它们本身并不支持 Prometheus 需要的数据格式。这就需要一个“翻译官”。
+・　主要职责：
+采集数据： 从目标应用或系统中抓取原始状态数据（如 CPU、内存、HTTP 请求次数、数据库连接数、延迟等）。
+格式转换： 将这些原始数据转换成监控系统（如 Prometheus）能够识别的标准格式。
+暴露端点： 通常是在某个端口上提供一个 /metrics HTTP 接口，等待监控服务器来抓取（Scrape）。
+
+Metrics Exporter 经常被部署为 Sidecar。
+假设你用 Java 写了一个核心业务程序（主容器），但这个程序没有自带 Prometheus 监控接口。为了监控它的运行状态，你可以这样操作：
+一个Pod -> Pod里放入主容器（运行 Java 业务代码） -> 同一个 Pod 里放入Sidecar 容器（运行一个 Metrics Exporter）。
+工作流程：
+Java 应用（主容器）在内部运行并产生状态数据（比如通过 JMX 暴露，或者写在特定的本地文件里）。
+Metrics Exporter（Sidecar 容器）因为和主容器在同一个 Pod 里，它们可以直接通过 localhost 通信，或者读取共享的存储卷。Exporter 收集这些内部数据。
+Exporter 将数据转化为标准格式，并在 localhost:9090/metrics 暴露出来。
+外部的 Prometheus 服务器访问这个 Pod 的 9090 端口，成功拉取到业务容器的监控指标。
