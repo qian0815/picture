@@ -1,0 +1,10 @@
+
+
+
+- name: モジュールの実行例
+  when:
+    - is_exists_pam.stat.islink is not defined
+    - not ansible_check_mode
+
+- name: モジュールの実行例
+  when: is_exists_pam.stat.islink is not defined and not ansible_check_mode
