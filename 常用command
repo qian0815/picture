@@ -1,7 +1,9 @@
 常用command
 
-
-
+wangqian@A1015202-dcp8g4t-wang01 ~ % python3 --version
+Python 3.9.6
+wangqian@A1015202-dcp8g4t-wang01 ~ % which python3
+/usr/bin/python3
 
 # 替换ip
 sed -i 's/10\.1\.51\.51;/10\.1\.51\.14;/g' /chroot/named/etc/named.conf.local
