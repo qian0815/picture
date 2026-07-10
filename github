@@ -11,3 +11,28 @@ git checkout <分支名>
 # 创建并直接切换到新分支
 git switch -c <新分支名>
 git checkout -b <新分支名>
+
+
+
+submodule
+# 同步配置	
+git submodule sync
+# 初始化并更新 
+submodule	git submodule init
+git submodule update
+更新子模块(22.23结合)	
+git submodule update --init --recursive
+查看 submodule 状态	
+git submodule status
+切换 submodule 分支	
+cd path/to/submodule
+git checkout <branch>
+拉取主仓库和 submodule 最新内容	
+git pull --recurse-submodules
+
+
+
+撤销某台电脑的访问
+ GitHub Settings → Devices → Deauthorize
+撤销某个 SSH key / deploy key
+你在仓库 → Settings → Deploy keys → 删除或 deauthorize
