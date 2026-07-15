@@ -1,0 +1,25 @@
+Jump
+root@kw1nv-byju0003n:~# cd /home/
+root@kw1nv-byju0003n:/home# ls
+每个人的文档  中身確認
+root@kw1nv-byju0003n:/home/qian.wang# ls
+root@kw1nv-byju0003n:/home/qian.wang# ls -la
+total 40
+drwxr-x---   4 qian.wang ldapgroup  4096 Feb 16 03:13 .
+drwxr-xr-x 314 root      root      12288 Jul  9 08:16 ..
+-rw-------   1 qian.wang ldapgroup   267 Mar 13 01:51 .bash_history
+-rw-r--r--   1 qian.wang ldapgroup   220 Feb 16 02:59 .bash_logout
+-rw-r--r--   1 qian.wang ldapgroup  3771 Feb 16 02:59 .bashrc
+drwx------   2 qian.wang ldapgroup  4096 Feb 16 03:09 .cache
+-rw-r--r--   1 qian.wang ldapgroup   807 Feb 16 02:59 .profile
+drwx------   2 qian.wang ldapgroup  4096 Feb 16 03:06 .ssh
+root@kw1nv-byju0003n:/home/qian.wang# cd .ssh
+root@kw1nv-byju0003n:/home/qian.wang/.ssh# ls -la
+total 16
+drwx------ 2 qian.wang ldapgroup 4096 Feb 16 03:06 .
+drwxr-x--- 4 qian.wang ldapgroup 4096 Feb 16 03:13 ..
+-rw------- 1 qian.wang ldapgroup 1956 Feb 16 03:06 known_hosts
+-rw------- 1 qian.wang ldapgroup 1120 Feb 16 03:06 known_hosts.old
+
+log path
+/var/log/secure 或 /var/log/auth.log
