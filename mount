@@ -1,0 +1,42 @@
+rootになる	bysl0001n	su -
+AIDE実行してないことを確認	bysl0001n	ps -ef | grep -i [a]ide
+syslog領域の書き・読み込み確認、何もでないが正	bysl0001n	lsof | grep /syslog/
+マウントの確認	bysl0001n	df -hT
+umount前にrhui5のためにフォルダを作成	bysl0001n	mkdir /syslog/rhui5-sr
+syslog１号機でnfsをumountする	bysl0001n	umount /syslog
+AdminpodTでadstの許可IPを作業していただく	bysl0001n	
+	bysl0001n	cp -p  /etc/fstab /etc/fstab.bk~
+fstabの編集	bysl0001n	vi /etc/fstab
+行を変更する	bysl0001n	"変更前
+10.31.128.250:/syslog1 /syslog nfs rw,hard,intr,nolock,auto 0 0
+変更後
+10.31.128.250:/syslog2/syslog01 /syslog nfs rw,hard,intr,nolock,auto 0 0"
+	bysl0001n	diff  /etc/fstab /etc/fstab.bk~
+マウント設定確認	bysl0001n	systemctl daemon-reload
+確認	bysl0001n	findmnt --verify
+syslog１で新しいフォルダをmountする	bysl0001n	mount -a 
+マウントの確認	bysl0001n	df -hT /syslog
+AIDEの更新	bysl0001n	/usr/bin/aide --init --config=/etc/aide/aide.conf
+AIDEの DB の確認	bysl0001n	ls -lh /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+AIDEの DB の置き換え	bysl0001n	cp -pf /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+	bysl0001n	/opt/tamperindicative/tamperindicative.py -U
+		
+AIDE実行してないことを確認	bysl0002n	ps -ef | grep -i [a]ide
+syslog領域の書き・読み込み確認、何もでないが正	bysl0002n	lsof | grep /syslog/
+	bysl0002n	df -hT
+syslog２号機でnfsをumountする	bysl0002n	umount /syslog
+	bysl0002n	cp -p  /etc/fstab /etc/fstab.bk~
+fstabの編集	bysl0002n	vi /etc/fstab
+追義の行を変更する	bysl0002n	"変更前
+10.31.128.250:/syslog2 /syslog nfs rw,hard,intr,nolock,auto 0 0
+変更後
+10.31.128.250:/syslog2/syslog02 /syslog nfs rw,hard,intr,nolock,auto 0 0"
+		diff  /etc/fstab /etc/fstab.bk~
+	bysl0002n	systemctl daemon-reload
+確認	bysl0002n	findmnt --verify
+syslog2で新しいフォルダをmountする	bysl0002n	mount -a 
+	bysl0002n	df -hT
+AIDEの更新	bysl0002n	/usr/bin/aide --init --config=/etc/aide/aide.conf
+AIDEの DB の確認	bysl0002n	ls -lh /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+AIDEの DB の置き換え	bysl0002n	cp -pf /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+	bysl0002n	/opt/tamperindicative/tamperindicative.py -U
