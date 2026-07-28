@@ -1,0 +1,53 @@
+# Ansible YAML 结构示例
+
+---
+- name: 配置 Web 服务器集群          # 1. Play 的名称
+  hosts: webservers                # 目标主机组
+  become: yes                      # 提权执行 (如 sudo)
+
+  tasks:
+    - name: 安装 Nginx             # 2. 单个 Task 的名称
+      yum:
+        name: nginx
+        state: present
+      tags:                        # 3. 为单个任务打标签
+        - install
+        - core
+
+    - name: 启动与配置服务组         # 4. Block 块的名称
+      block:                       # 开始 Block：将下面两个任务作为一个整体
+        - name: 复制 Nginx 配置文件
+          template:
+            src: nginx.conf.j2
+            dest: /etc/nginx/nginx.conf
+
+        - name: 启动 Nginx 服务
+          service:
+            name: nginx
+            state: started
+            enabled: yes
+            
+      when: ansible_os_family == "RedHat"  # 5. 条件：只有 RedHat 系系统才执行整个 block
+      tags:                                # 6. 标签：应用到 block 内的所有任务
+        - config
+        - service
+
+# 执行 Ansible 的命令行代码
+# 执行整个 playbook
+ansible-playbook site.yml
+# -i 指定资产清单文件路径
+ansible-playbook -i /etc/ansible/hosts site.yml
+# --tags 只执行打了 "config" 或 "install" 标签的任务
+ansible-playbook site.yml --tags "config,install"   # 也可以简写为 -t "config,install"
+# --skip-tags 跳过打了 "install" 标签的任务（执行其他所有任务）
+ansible-playbook site.yml --skip-tags "install"
+# -l 只在 webserver1 和 webserver2 这两台机器上执行，即使 YAML 里的 hosts 写的是整个集群
+ansible-playbook site.yml --limit "webserver1,webserver2"   # 简写为 -l
+# -C 模拟执行（检查模式），不会对目标服务器产生实际修改，用于预览会发生什么变化
+ansible-playbook site.yml --check   # 简写为 -C
+# -e 通过命令行传入参数（常用于脚本自动化对接）
+ansible-playbook site.yml -e "app_version=1.2.0 env=production"
+# 注意：任务名称必须和 YAML 中 name 字段的内容完全一致（区分大小写）
+ansible-playbook site.yml --start-at-task="启动 Nginx 服务"
+# 单步执行
+ansible-playbook site.yml --step
