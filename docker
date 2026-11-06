@@ -6,3 +6,12 @@ docker compose version
 docker run hello-world
 
 ------------
+wangqian@A1015202-dcp8g4t-wang01 ~ % alias addmykey='eval $(ssh-agent -s) && ssh-add --apple-use-keychain ~/.ssh/id_ed25519'
+wangqian@A1015202-dcp8g4t-wang01 ~ % docker cp ~/.ssh/config 7b8edab32d5f:/root/
+Successfully copied 88.8kB (transferred 90.6kB) to 7b8edab32d5f:/root/
+------------
+github
+Developer Settings → Personal access tokens → Tokens (classic)->  Generate new token (classic)-> repo   （anyway.30days)
+root@7b8edab32d5f:~# git clone https://＜token＞@github.com/tamac-io/backyard-ansible.git
+
+
